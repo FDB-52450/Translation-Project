@@ -1,0 +1,1 @@
+# Este archivo tendra como objetivo remover el texto de la copia de la imagen original y dejar espacio vacio.

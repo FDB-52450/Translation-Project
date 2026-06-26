@@ -1,0 +1,1 @@
+# Este archivo tendra como objetivo transformar el texto obtenido por el OCR en una clase (sin cambios) para facilitar su posterior procesamiento.

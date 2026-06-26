@@ -1,0 +1,1 @@
+# Este archivo tendra como objetivo posicionar el texto obtenido por el LLM en la copia de la imagen original, para que se vea como si fuera parte de la imagen original.

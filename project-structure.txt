@@ -1,0 +1,44 @@
+Translation Project/
+│
+├── venv/                     # virtual environment (DO NOT touch / upload)
+├── __pycache__/              # auto-generated (ignore)
+│
+├── main.py                   # entry point (runs full pipeline)
+├── config.py                 # settings (paths, OCR options, etc.)
+│
+├── README.txt                # install instructions
+├── .gitignore
+├── project-structure.txt     # basic folder structure
+│
+├── data/
+│   ├── input/               # raw images
+│   ├── output/              # final translated images / json
+│   └── temp/                # intermediate files
+│
+└── src/
+    ├── detection/
+    │   ├── detector.py          # PaddleOCR text detection wrapper
+    │   ├── ocr.py               # OCR initialization / shared model
+    │   └── parser.py            # result conversion into dataclasses
+    │
+    ├── processing/
+    │   ├── cleanup.py          # cleans up text
+    │   └── structure.py        # convert lines into block of lines
+    │
+    ├── translation/
+    │   ├── translator.py       # translation API / model
+    │   └── postprocess.py      # fix grammar, formatting, etc.
+    │
+    ├── rendering/
+    │   ├── cleaner.py       # remove text on original image
+    │   └── renderer.py      # insert text on original image
+    │
+    ├── models/
+    │   ├── detection.py       
+    │   ├── processing.py      
+    │   ├── translation.py      
+    │   └── rendering.py      
+    │
+    └── utils/
+        ├── json_utils.py          # safe JSON export/import
+        └── image_utils.py         # resizing, image path detection, etc.
