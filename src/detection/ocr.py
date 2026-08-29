@@ -1,6 +1,9 @@
 # Este archivo tendra como objetivo almacenar la configuracion y la inicializacion del modelo de OCR, 
 # para ser utilizado por detector.py
 
+from config import COMIC_MODE, OCR_ENABLE_MKLDNN, OCR_LANG
+from paddleocr import PaddleOCR
+
 '''
 ## CODIGO PARA SILENCIAR EL LOG DEL OCR, PARA QUE NO APAREZCA EN LA CONSOLA
 
@@ -40,8 +43,6 @@ def get_ocr():
 
     return _ocr_instance'''
 
-from paddleocr import PaddleOCR
-
 _ocr_instance = None
 
 def get_ocr():
@@ -49,8 +50,11 @@ def get_ocr():
     
     if _ocr_instance is None:
         _ocr_instance = PaddleOCR(
-            lang="en",
-            enable_mkldnn=False
+            lang = OCR_LANG,
+            enable_mkldnn = OCR_ENABLE_MKLDNN,
+            use_doc_orientation_classify = not COMIC_MODE,
+            use_doc_unwarping = not COMIC_MODE,
+            use_textline_orientation = not COMIC_MODE,
         )
     
     return _ocr_instance
