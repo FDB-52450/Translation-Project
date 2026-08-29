@@ -11,21 +11,6 @@ class OCRLine:
     confidence: float
 
 @dataclass
-class NormalizedLine:
-    text: str
-    center_x: float
-    center_y: float
-    width: float
-    height: float
-    rotation: float
-    confidence: float
-
-@dataclass
-class LineBlock:
-    lines: List[NormalizedLine]
-    center_x: float
-    center_y: float
-    width: float
-    height: float
-    rotation: float
-    confidence: float
+class OCRPage:
+    id: int
+    lines: list[OCRLine]
