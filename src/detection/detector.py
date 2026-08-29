@@ -7,4 +7,4 @@ from paddleocr import PaddleOCR
 def detect_text(ocr: PaddleOCR, image_path: WindowsPath):
     raw_results = ocr.predict(str(image_path))
     
-    return raw_results
+    return raw_results[0]
