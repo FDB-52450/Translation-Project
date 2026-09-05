@@ -3,7 +3,7 @@
 
 from src.models.detection import OCRLine, OCRPage
 
-def parse_page(raw_page) -> OCRPage:
+def parse_page(raw_page) -> list[OCRLine]:
     texts = raw_page.get("rec_texts", [])
     scores = raw_page.get("rec_scores", [])
     polygons = raw_page.get("rec_polys", [])
@@ -17,4 +17,4 @@ def parse_page(raw_page) -> OCRPage:
         for text, score, polygon in zip(texts, scores, polygons)
     ]
 
-    return OCRPage(1, lines = lines)
+    return lines

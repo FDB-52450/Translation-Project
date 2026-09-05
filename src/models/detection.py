@@ -14,3 +14,4 @@ class OCRLine:
 class OCRPage:
     id: int
     lines: list[OCRLine]
+    image_path: str

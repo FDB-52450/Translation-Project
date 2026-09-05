@@ -95,3 +95,4 @@ class TextBlock:
 class Page:
     id: int
     text_blocks: list[TextBlock]
+    image_path: str

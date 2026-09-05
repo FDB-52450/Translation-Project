@@ -11,7 +11,7 @@ def process_page(page: OCRPage) -> Page:
     line_blocks = group_lines_into_blocks(clean_normalized_lines)
     text_blocks = group_blocks_into_text_blocks(line_blocks)
 
-    return Page(page.id, text_blocks)
+    return Page(page.id, text_blocks, page.image_path)
 
 
 def process_pages(pages: list[OCRPage]) -> list[Page]:
