@@ -1,6 +1,8 @@
 # Este archivo tendra como objetivo enviar el texto limpio y organizado a un modelo de lenguaje para su traducción.
 
+import json
 from ollama import chat
+
 from src.models.processing import Page, TextBlock
 from src.models.translation import TranslationContext
 
@@ -11,12 +13,17 @@ You are a professional translator.
 Rules:
 - Translate from the source language to the target language.
 - Preserve the meaning, tone, and intent.
-- Preserve formatting, line breaks, and paragraph structure.
+- Preserve line breaks INSIDE each input item.
 - Do NOT summarize.
 - Do NOT explain.
 - Do NOT add notes.
 - Do NOT translate proper names unless they normally have an established translation.
-- Return ONLY the translated text.
+- Return exactly one translation for every input item.
+- Preserve the exact order of the input items.
+- Never merge two input items.
+- Never omit an input item.
+- Never add an item.
+- Your response must be a JSON array of strings.
 """.strip()
 
 
@@ -35,18 +42,30 @@ def translate_page(page: Page, src_lang: str, target_lang: str, context: Transla
         context_str = "\n".join(context_sections) if context_sections else "None"
 
     prompt = f"""
-    Translate every item from {src_lang} to {target_lang}.
+    Translate each input from {src_lang} to {target_lang}.
 
     [CRITICAL CONTEXT FOR THIS TRANSLATION]
     {context_str}
 
-    Return exactly one translated item for each input item.
-    Do not number them.
-    Separate each translation with <SEP>.
+    There are exactly {len(blocks_str)} input items.
+    You MUST return exactly {len(blocks_str)} translations.
+    Return ONLY a JSON array of strings.
 
-    Input:
-    <SEP>
-    """ + "<SEP>".join(blocks_str)
+    For example:
+    Input 1: "The mission was simple. Find"
+    Input 2: "the device."
+
+    Correct output:
+    ["La misión era sencilla. Encuentra", "el dispositivo."]
+
+    INCORRECT output:
+    ["La misión era sencilla. Encuentra el dispositivo."]
+
+    Inputs:
+    """
+
+    for i, block in enumerate(blocks_str):
+        prompt += f"\nINPUT {i + 1}:\n{block}\n"
 
     response = chat(
         model = MODEL,
@@ -54,12 +73,29 @@ def translate_page(page: Page, src_lang: str, target_lang: str, context: Transla
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": prompt},
         ],
+        format={
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": len(blocks_str),
+            "maxItems": len(blocks_str)
+        },
         options = {"temperature": 0},
     )
 
-    translations = response.message.content.split("<SEP>")
+    translations = json.loads(response.message.content)
 
     for block, tl_str in zip(page.text_blocks, translations):
         block.translated_text = tl_str
 
     return page
+
+def translate_pages(pages: list[Page], src_lang: str, target_lang: str, context: TranslationContext = None) -> list[Page]:
+    tl_pages: list[Page] = []
+
+    for page in pages:
+        tl_page = translate_page(page, src_lang, target_lang, context)
+
+        print(f"PAGE {page.id} TRANSLATED SUCCESFULLY")
+        tl_pages.append(tl_page)
+
+    return tl_pages
