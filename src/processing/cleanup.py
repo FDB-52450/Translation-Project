@@ -4,10 +4,22 @@
 # - Normalizar tipos np (numpy) a tipos nativos de Python (como convertir np.int64 a int, np.float64 a float, etc.)
 # - Convertir el texto a un formato más limpio y estructurado para facilitar su posterior procesamiento por el modelo de lenguaje.
 
+import re
 from math import atan2, degrees, hypot
 
 from src.models.detection import OCRPage
 from src.models.processing import NormalizedLine
+
+from config import ONOMATOPOEIA_FILTERING
+
+KNOWN_ONOMATOPOEIA = {
+	"ah", "aha", "aah", "ahh", "ahhh", "eh", "oh", "ooh", "oooh", "uh",
+	"huh", "hmm", "hmmm", "psst", "shh", "bang", "boom", "crash", "pow",
+	"zap", "wham", "thud", "clang", "clink", "buzz", "hiss", "splash", "whoosh",
+	"swish", "whiz", "zoom", "vroom", "swoosh", "tick", "tock", "ping", "ding",
+	"dong", "beep", "boop", "meow", "woof", "moo", "baa", "purr", "mrr",
+	"oof", "ugh", "ew", "ow", "ouch", "yay", "yikes", "brr", "phew", "fizz"
+}
 
 def convert_page_to_normalized_lines(page: OCRPage) -> list[NormalizedLine]:
 	normalized_lines = []
@@ -37,6 +49,26 @@ def convert_page_to_normalized_lines(page: OCRPage) -> list[NormalizedLine]:
 
 	return normalized_lines
 
+def is_onomatopoeia(text: str):
+	cleaned = text.strip().lower()
+	cleaned = cleaned.replace('!', '')
+	
+	if re.search(r"(.)\1\1", cleaned):
+		return True
+
+	if cleaned in KNOWN_ONOMATOPOEIA:
+		return True
+
+	if cleaned.isupper() and " " not in cleaned:
+		return True
+		
+	return False
+
 
 def clean_lines(lines: list[NormalizedLine]) -> list[NormalizedLine]:
-	return [line for line in lines if line.confidence >= 0.75]
+	filtered = [line for line in lines if line.confidence >= 0.75]
+
+	if ONOMATOPOEIA_FILTERING:
+		filtered = [line for line in filtered if not is_onomatopoeia(line.text)]
+
+	return filtered
