@@ -1,7 +1,7 @@
 # TP GRUPO 4 - OpenCV: Traductor de Comics
 ## INTEGRANTES
 - Franco Di Bernardo - 52450
-- x
+- Matias Bilicich - 48009
 - x
 - x
 
